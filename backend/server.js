@@ -6,66 +6,107 @@ const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const errorHandler = require("./middleware/errorHandler");
 
-// Load env vars
+// Load environment variables
 dotenv.config();
 
-// Connect to database
+// Connect to MongoDB
 connectDB();
 
 const app = express();
 
+
 // ─── Middleware ───────────────────────────────────────────────────────────────
+
+// Body parser
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
+// ✅ CORS FIX (IMPORTANT)
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://finance-dashboard-app-1.onrender.com"
+];
+
 app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin || origin === frontendUrl) return callback(null, true);
-    return callback(new Error("CORS policy: origin not allowed"));
+  origin: function (origin, callback) {
+    // allow requests with no origin (like Postman)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error("Not allowed by CORS"));
+    }
   },
-  credentials: true,
+  credentials: true
 }));
 
+// Logging (only in development)
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
 
-// Rate limiting — 100 requests per 15 minutes per IP
+
+// ─── Rate Limiting ────────────────────────────────────────────────────────────
+
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
+  windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100,
-  message: { success: false, message: "Too many requests, please try again later." },
+  message: {
+    success: false,
+    message: "Too many requests, please try again later."
+  }
 });
+
 app.use("/api", limiter);
 
+
 // ─── Routes ──────────────────────────────────────────────────────────────────
+
 app.use("/api/auth",      require("./routes/authRoutes"));
 app.use("/api/users",     require("./routes/userRoutes"));
 app.use("/api/records",   require("./routes/recordRoutes"));
 app.use("/api/dashboard", require("./routes/dashboardRoutes"));
 
-// Health check
+
+// ─── Health Check ────────────────────────────────────────────────────────────
+
 app.get("/api/health", (req, res) => {
-  res.json({ success: true, message: "Finance Dashboard API is running", timestamp: new Date() });
+  res.json({
+    success: true,
+    message: "Finance Dashboard API is running",
+    timestamp: new Date()
+  });
 });
 
-// 404 handler
+
+// ─── 404 Handler ─────────────────────────────────────────────────────────────
+
 app.use((req, res) => {
-  res.status(404).json({ success: false, message: `Route ${req.originalUrl} not found` });
+  res.status(404).json({
+    success: false,
+    message: `Route ${req.originalUrl} not found`
+  });
 });
 
-// Global error handler (must be last)
+
+// ─── Global Error Handler ────────────────────────────────────────────────────
+
 app.use(errorHandler);
 
-// ─── Start Server ─────────────────────────────────────────────────────────────
+
+// ─── Start Server ────────────────────────────────────────────────────────────
+
 const PORT = process.env.PORT || 5000;
+
 const server = app.listen(PORT, () => {
-  console.log(`\n🚀 Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
-  console.log(`📊 Finance Dashboard API: http://localhost:${PORT}/api\n`);
+  console.log(`🚀 Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+  console.log(`🌐 API URL: https://finance-dashboard-app-ggbu.onrender.com/api`);
 });
 
-// Handle unhandled promise rejections
+
+// ─── Handle Unhandled Promise Rejections ─────────────────────────────────────
+
 process.on("unhandledRejection", (err) => {
   console.error(`❌ Unhandled Rejection: ${err.message}`);
   server.close(() => process.exit(1));
