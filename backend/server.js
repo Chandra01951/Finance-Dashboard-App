@@ -17,7 +17,15 @@ const app = express();
 // ─── Middleware ───────────────────────────────────────────────────────────────
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+
+const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || origin === frontendUrl) return callback(null, true);
+    return callback(new Error("CORS policy: origin not allowed"));
+  },
+  credentials: true,
+}));
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
