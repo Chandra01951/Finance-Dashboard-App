@@ -13,6 +13,10 @@ RUN npm install --production=false && npm cache clean --force
 COPY public/ ./public/
 COPY src/ ./src/
 
+# Allow API URL injection at build time
+ARG REACT_APP_API_URL
+ENV REACT_APP_API_URL=${REACT_APP_API_URL:-https://finance-dashboard-app-ggbu.onrender.com/api}
+
 # Build the application
 RUN npm run build
 
