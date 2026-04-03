@@ -7,9 +7,9 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm ci --only=production=false && npm cache clean --force
+RUN npm install --production=false && npm cache clean --force
 
-# Copy source code (excluding files in .dockerignore)
+# Copy source code
 COPY public/ ./public/
 COPY src/ ./src/
 
