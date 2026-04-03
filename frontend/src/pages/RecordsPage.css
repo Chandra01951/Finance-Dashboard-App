@@ -1,0 +1,55 @@
+.records-filters {
+  margin-bottom: 16px;
+  padding: 18px 22px;
+}
+.records-filters__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+}
+.records-filters__clear { margin-top: 12px; }
+
+.records-table-card { padding: 0; overflow: hidden; }
+.records-table-card .table-wrap { padding: 0; }
+.records-table-card table th:first-child,
+.records-table-card table td:first-child { padding-left: 24px; }
+.records-table-card table th:last-child,
+.records-table-card table td:last-child { padding-right: 24px; }
+
+.records-actions {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+
+.records-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+}
+.records-pagination__info {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+/* Reuse category pill from dashboard */
+.dash__category {
+  display: inline-block;
+  padding: 3px 10px;
+  background: var(--bg-elevated);
+  border-radius: 99px;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-transform: capitalize;
+  border: 1px solid var(--border);
+}

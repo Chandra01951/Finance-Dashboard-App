@@ -1,0 +1,13 @@
+{
+  "name": "finance-dashboard",
+  "version": "1.0.0",
+  "description": "FinanceOS - Full-stack Finance Dashboard (MERN)",
+  "scripts": {
+    "install:all": "cd backend && npm install && cd ../frontend && npm install",
+    "seed": "cd backend && npm run seed",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm start",
+    "start": "cd backend && npm start"
+  },
+  "private": true
+}
